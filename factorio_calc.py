@@ -1,5 +1,6 @@
 import tkinter as tk
 import math
+import yaml
 from tkinter import ttk
 from collections import defaultdict
 
@@ -10,74 +11,97 @@ assembler_speeds = {
     'Assembler 3': 1.25
 }
 
-# === Recipe Database ===
-recipes = {
-    'red_science': {
-        'name': 'Red Science',
-        'ingredients': {
-            'iron_gear': 1,
-            'copper_plate': 1
-        },
-        'time': 5.0
-    },
-    'green_science': {
-        'name': 'Green Science',
-        'ingredients': {
-            'inserter': 1,
-            'yellow_belt': 1
-        },
-        'time': 6.0
-    },
-    'inserter': {
-        'name': 'Inserter',
-        'ingredients': {
-            'iron_plate': 1,
-            'iron_gear': 1,
-            'green_circuit': 1
-        },
-        'time': 0.5
-    },
-    'yellow_belt': {
-        'name': 'Yellow Belt',
-        'ingredients': {
-            'iron_plate': 1,
-            'iron_gear': 1
-        },
-        'time': 0.5
-    },
-    'iron_gear': {
-        'name': 'Iron Gear',
-        'ingredients': {
-            'iron_plate': 2
-        },
-        'time': 0.5
-    },
-    'green_circuit': {
-        'name': 'Green Circuit',
-        'ingredients': {
-            'iron_plate': 1,
-            'copper_cable': 3
-        },
-        'time': 0.5
-    },
-    'copper_cable': {
-        'name': 'Copper Cable',
-        'ingredients': {
-            'copper_plate': 1
-        },
-        'time': 0.5
-    },
-    'iron_plate': {
-        'name': 'Iron Plate',
-        'ingredients': {},
-        'time': 3.5
-    },
-    'copper_plate': {
-        'name': 'Copper Plate',
-        'ingredients': {},
-        'time': 3.5
-    }
+output_to_recipe = {
+  "petroleum_gas": "basic_oil_processing",
+  "heavy_oil": "advanced_oil_processing",
+  "light_oil": "advanced_oil_processing"
 }
+
+# # === Recipe Database ===
+# recipes = {
+#     'red_science': {
+#         'name': 'Red Science',
+#         'ingredients': {
+#             'iron_gear': 1,
+#             'copper_plate': 1
+#         },
+#         'time': 5.0
+#     },
+#     'green_science': {
+#         'name': 'Green Science',
+#         'ingredients': {
+#             'inserter': 1,
+#             'yellow_belt': 1
+#         },
+#         'time': 6.0
+#     },
+#     'blue_science': {
+#         'name': 'Blue Science',
+#         'ingredients': {
+#             'advanced_circuit': 3,
+#             'engine': 2,
+#             'sulfur': 1
+#         },
+#         'time': 24.0
+#     },
+#     'inserter': {
+#         'name': 'Inserter',
+#         'ingredients': {
+#             'iron_plate': 1,
+#             'iron_gear': 1,
+#             'green_circuit': 1
+#         },
+#         'time': 0.5
+#     },
+#     'yellow_belt': {
+#         'name': 'Yellow Belt',
+#         'ingredients': {
+#             'iron_plate': 1,
+#             'iron_gear': 1
+#         },
+#         'time': 0.5
+#     },
+#     'iron_gear': {
+#         'name': 'Iron Gear',
+#         'ingredients': {
+#             'iron_plate': 2
+#         },
+#         'time': 0.5
+#     },
+#     'green_circuit': {
+#         'name': 'Green Circuit',
+#         'ingredients': {
+#             'iron_plate': 1,
+#             'copper_cable': 3
+#         },
+#         'time': 0.5
+#     },
+#     'copper_cable': {
+#         'name': 'Copper Cable',
+#         'ingredients': {
+#             'copper_plate': 1
+#         },
+#         'time': 0.5
+#     },
+#     'iron_plate': {
+#         'name': 'Iron Plate',
+#         'ingredients': {},
+#         'time': 3.5
+#     },
+#     'copper_plate': {
+#         'name': 'Copper Plate',
+#         'ingredients': {},
+#         'time': 3.5
+#     },
+#     'sulfur': {
+#     'name': 'Sulfur',
+#     'ingredients': {},
+#     'time': 3.5
+#     }
+# }
+
+with open("recipes.yaml", "r") as f:
+    recipes = yaml.safe_load(f)
 
 # === Recursive Calculation for Resource & Assembler Requirements ===
 def calculate_requirements(target_item, rate_per_sec):
@@ -89,9 +113,12 @@ def calculate_requirements(target_item, rate_per_sec):
             raw_resources[item] += rate
             return
 
-        item_rates[item] += rate
+        output_amount = recipes[item].get('output', 1)
+        crafts_per_sec = rate / output_amount
+        item_rates[item] += crafts_per_sec
+
         for ingredient, amount in recipes[item]['ingredients'].items():
-            expand(ingredient, rate * amount)
+            expand(ingredient, crafts_per_sec * amount)
 
     expand(target_item, rate_per_sec)
     return item_rates, raw_resources
@@ -106,9 +133,16 @@ class FactorioCalculatorApp:
         self.item_label = ttk.Label(root, text="Target Item:")
         self.item_label.grid(column=0, row=0, padx=5, pady=5)
 
+        # Build a display name to item key mapping
+        self.display_name_to_key = {
+            recipes[key].get('name', key): key
+            for key in recipes
+            if recipes[key]['ingredients']  # only craftable items
+        }
+
         self.item_var = tk.StringVar()
         self.item_dropdown = ttk.Combobox(root, textvariable=self.item_var, state='readonly')
-        self.item_dropdown['values'] = [item for item in recipes if recipes[item]['ingredients']]
+        self.item_dropdown['values'] = list(self.display_name_to_key.keys())
         self.item_dropdown.current(0)
         self.item_dropdown.grid(column=1, row=0, padx=5, pady=5)
 
@@ -139,7 +173,8 @@ class FactorioCalculatorApp:
         self.result_text.grid(column=0, row=4, columnspan=2, padx=5, pady=5)
 
     def calculate(self):
-        item = self.item_var.get()
+        display_name = self.item_var.get()
+        item = self.display_name_to_key.get(display_name)
         assembler = self.assembler_var.get()
         try:
             rate = float(self.rate_entry.get())
@@ -155,7 +190,9 @@ class FactorioCalculatorApp:
         item_rates, raw_resources = calculate_requirements(item, rate)
 
         crafting_speed = assembler_speeds[assembler]
-        output = f"To make {rate} {item}/sec with {assembler}:\n\n"
+
+        display_name = recipes[item].get("name", item)
+        output = f"To make {rate} {display_name}/sec with {assembler}:\n\n"
 
         # Show assembler counts for craftable items only
         output += "Assembler requirements:\n"
@@ -164,12 +201,16 @@ class FactorioCalculatorApp:
                 continue
             recipe_time = recipes[item_name]['time']
             assemblers = math.ceil(item_rate * recipe_time / crafting_speed)
-            output += f"  {assemblers} assembler(s) for {item_name} ({item_rate:.2f}/sec)\n"
+            machine_type = recipes[item_name].get('machine', 'assembler')
+            display_name = recipes[item_name].get("name", item_name)
+            output += f"  {assemblers} {machine_type}(s) for {display_name} ({item_rate:.2f}/sec)\n"
+            #output += f"  {assemblers} assembler(s) for {item_name} ({item_rate:.2f}/sec)\n"
 
         # # Show raw material needs
         output += "\nRaw inputs per second:\n"
         for res, amt in sorted(raw_resources.items()):
-            output += f"  {amt:.2f} {res}/sec\n"
+            display_name = recipes[res].get("name", res) if res in recipes else res 
+            output += f"  {amt:.2f} {display_name}/sec\n"
 
         self.show_result(output)
 

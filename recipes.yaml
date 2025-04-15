@@ -1,0 +1,110 @@
+# === Recipe Database ===
+red_science:
+  name: Red Science
+  ingredients:
+    iron_gear: 1
+    copper_plate: 1
+  time: 5.0
+
+green_science:
+  name: Green Science
+  ingredients:
+    inserter: 1
+    yellow_belt: 1
+  time: 6.0
+
+blue_science:
+  name: Blue Science
+  ingredients:
+    advanced_circuit: 3
+    engine: 2
+    sulfur: 1
+  time: 24.0
+
+inserter:
+  name: Inserter
+  ingredients:
+    iron_plate: 1
+    iron_gear: 1
+    green_circuit: 1
+  time: 0.5
+
+yellow_belt:
+  name: Yellow Belt
+  ingredients:
+    iron_plate: 1
+    iron_gear: 1
+  time: 0.5
+
+iron_gear:
+  name: Iron Gear
+  ingredients:
+    iron_plate: 2
+  time: 0.5
+
+green_circuit:
+  name: Green Circuit
+  ingredients:
+    iron_plate: 1
+    copper_cable: 3
+  time: 0.5
+
+copper_cable:
+  name: Copper Cable
+  ingredients:
+    copper_plate: 1
+  time: 0.5
+
+iron_plate:
+  name: Iron Plate
+  ingredients: {}
+  time: 3.5
+
+copper_plate:
+  name: Copper Plate
+  ingredients: {}
+  time: 3.5
+
+sulfur:
+  name: Sulfur
+  ingredients:
+    petroleum_gas: 30
+    water: 30
+  time: 1
+  output: 2
+  machine: chemical_plant
+
+plastic:
+  name: Plastic
+  ingredients:
+    coal: 1
+    petroleum_gas: 20
+  time: 1
+  output: 2
+
+petroleum_gas:
+  name: Petroleum Gas
+  ingredients: 
+    crude_oil: 100
+  time: 5
+  output: 45
+  machine: oil_refinery
+
+crude_oil:
+  name: Crude Oil
+  ingredients:
+  time: 1
+  output: 100
+  machine: pump_jack
+
+advanced_oil_processing:
+  name: Advanced Oil Processing
+  ingredients: 
+    crude_oil: 100
+    water: 50
+  outputs:
+    heavy_oil: 25
+    light_oil: 45
+    petroleum_gas: 55
+  time: 5
+  macine: oil_refinery
