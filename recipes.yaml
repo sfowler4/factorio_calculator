@@ -1,4 +1,6 @@
-# === Recipe Database ===
+# Recipe Database
+
+# Sciences
 red_science:
   name: Red Science
   ingredients:
@@ -21,20 +23,14 @@ blue_science:
     sulfur: 1
   time: 24.0
 
-inserter:
-  name: Inserter
-  ingredients:
-    iron_plate: 1
-    iron_gear: 1
-    green_circuit: 1
+offshore_pump:
+  name: Offshore Pump
+  ingredients: 
+    iron_gear: 2
+    pipe: 3
   time: 0.5
 
-yellow_belt:
-  name: Yellow Belt
-  ingredients:
-    iron_plate: 1
-    iron_gear: 1
-  time: 0.5
+# Intermediate Products
 
 iron_gear:
   name: Iron Gear
@@ -54,16 +50,6 @@ copper_cable:
   ingredients:
     copper_plate: 1
   time: 0.5
-
-iron_plate:
-  name: Iron Plate
-  ingredients: {}
-  time: 3.5
-
-copper_plate:
-  name: Copper Plate
-  ingredients: {}
-  time: 3.5
 
 sulfur:
   name: Sulfur
@@ -108,3 +94,115 @@ advanced_oil_processing:
     petroleum_gas: 55
   time: 5
   macine: oil_refinery
+
+iron_plate:
+  name: Iron Plate
+  ingredients: 
+  time: 3.5
+
+copper_plate:
+  name: Copper Plate
+  ingredients: 
+  time: 3.5
+
+steel_plate:
+  name: Steel Plate
+  ingredients: 
+    iron_plate: 5
+  time: 16
+  machine: furnace
+
+stone_brick:
+  name: Stone Brick
+  ingredients: 
+    stone: 2
+    coal: 1
+  time: 3.2
+  machine: furnace
+
+# Logistics
+
+wooden_chest:
+  name: Wooden Chest
+  ingredients:
+    wood: 2
+  time: 0.5
+
+iron_chest:
+  name: Iron Chest
+  ingredients: 
+    iron_plate: 8
+  time: 0.5
+
+steel_chest:
+  name: Steel Chest
+  ingredients:
+    steel_plate: 8
+  time: 0.5
+
+tank:
+  name: Tank
+  ingredients:
+    iron_plate: 20
+    steel_plate: 5
+  time: 3
+
+yellow_belt:
+  name: Yellow Belt
+  ingredients:
+    iron_plate: 1
+    iron_gear: 1
+  time: 0.5
+
+red_belt:
+  name: Red Belt
+  ingredients:
+    yellow_belt: 1
+    iron_gear: 5
+  time: 0.5
+
+blue_belt:
+  name: Blue Belt
+  ingredients: 
+    red_belt: 1
+    iron_gear: 10
+    lube: 20
+  time: 0.5
+
+green_belt:
+  name: Green Belt
+  ingredients:
+    blue_belt: 1
+    lube: 20
+    tungsten_plate: 5
+  time: 0.5
+
+pipe:
+  name: Pipe
+  ingredients: 
+    iron_plate: 1
+  time: 0.5
+
+underground_pipe:
+  name: Underground Pipe
+  ingredients:
+    iron_plate: 5
+    pipe: 10
+  time: 0.5
+  output: 2
+
+pump:
+  name: Pump
+  ingredients:
+    motor: 1
+    pipe: 1
+    steel: 1
+  time: 2
+
+inserter:
+  name: Inserter
+  ingredients:
+    iron_plate: 1
+    iron_gear: 1
+    green_circuit: 1
+  time: 0.5
